@@ -31,3 +31,16 @@
   (testing "All spares"
     (let [result (score [9 1 1 9 1 9 1 9 1 9 1 9 1 9 1 9 1 9 1 9 1])]
       (is (= 110 result)))))
+
+(deftest rolling-strikes
+  (testing "Single strike with bonuses"
+    (let [result (score [10 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0])]
+      (is (= 14 result))))
+
+  (testing "Two consecutive strikes with bonuses"
+    (let [result (score [10 10 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0])]
+      (is (= 35 result))))
+
+  (testing "All strikes"
+    (let [result (score [10 10 10 10 10 10 10 10 10 10 10 10])]
+      (is (= 300 result)))))
