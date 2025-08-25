@@ -6,13 +6,14 @@
                          (= 10 (second (get (:rolls acc) (- idx 1)))))
         current-frame (if is-new-frame
                         (+ 1 (:frame-counter acc))
-                        (:frame-counter acc))]
+                        (:frame-counter acc))
+        is-strike (= roll 10)]
     {:running-total (+ (:running-total acc)
                        (if (<= current-frame 10) roll 0)
-                       (if (and (<= current-frame 10) (= roll 10))
+                       (if (and (<= current-frame 10) is-strike)
                          (second (get (:rolls acc) (+ idx 1)))
                          0)
-                       (if (and (<= current-frame 10) (= roll 10))
+                       (if (and (<= current-frame 10) is-strike)
                          (second (get (:rolls acc) (+ idx 2)))
                          0)
                        (if (and (<= current-frame 10)
