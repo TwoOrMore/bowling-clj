@@ -22,9 +22,7 @@
                                 is-new-frame
                                 (= 10 (+ roll (get-future-roll acc idx 1))))
                          (get-future-roll acc idx 2)
-                         0)
-                       )
-     
+                         0))
      :new-frame is-new-frame
      :frame-counter current-frame
      :rolls (:rolls acc)}))
