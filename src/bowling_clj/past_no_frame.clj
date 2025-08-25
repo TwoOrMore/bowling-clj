@@ -1,4 +1,4 @@
-(ns bowling-clj.core)
+(ns bowling-clj.past-no-frame)
 
 (defn calculate-roll [acc current]
   {:previous-spare (if (:new-frame acc) false (= 10 (+ current (:last-roll acc))))

@@ -1,6 +1,6 @@
-(ns bowling-clj.core-test
+(ns bowling-clj.past-no-frame-test
   (:require [clojure.test :refer :all]
-            [bowling-clj.core :refer :all]))
+            [bowling-clj.past-no-frame :refer :all]))
 
 (deftest rolling-singles
   (testing "Rolling all zeros"
