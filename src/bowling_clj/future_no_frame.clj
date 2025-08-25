@@ -9,13 +9,13 @@
                         (:frame-counter acc))]
     {:running-total (+ (:running-total acc)
                        (if (<= current-frame 10) roll 0)
-                       (if (and (< (:frame-counter acc) 10) (= roll 10))
+                       (if (and (<= current-frame 10) (= roll 10))
                          (second (get (:rolls acc) (+ idx 1)))
                          0)
-                       (if (and (< (:frame-counter acc) 10) (= roll 10))
+                       (if (and (<= current-frame 10) (= roll 10))
                          (second (get (:rolls acc) (+ idx 2)))
                          0)
-                       (if (and (< (:frame-counter acc) 10)
+                       (if (and (<= current-frame 10)
                                 is-new-frame
                                 (= 10 (+ roll (second (get (:rolls acc) (+ idx 1))))))
                          (second (get (:rolls acc) (+ idx 2)))
