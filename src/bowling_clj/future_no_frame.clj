@@ -1,5 +1,7 @@
 (ns bowling-clj.future-no-frame)
 
+(defn get-future-roll [acc idx plus]
+  (second (get (:rolls acc) (+ idx plus))))
 
 (defn calculate-roll [acc [idx roll]]
   (let [is-new-frame (or (not (:new-frame acc))
@@ -11,15 +13,15 @@
     {:running-total (+ (:running-total acc)
                        (if (<= current-frame 10) roll 0)
                        (if (and (<= current-frame 10) is-strike)
-                         (second (get (:rolls acc) (+ idx 1)))
+                         (get-future-roll acc idx 1)
                          0)
                        (if (and (<= current-frame 10) is-strike)
-                         (second (get (:rolls acc) (+ idx 2)))
+                         (get-future-roll acc idx 2)
                          0)
                        (if (and (<= current-frame 10)
                                 is-new-frame
-                                (= 10 (+ roll (second (get (:rolls acc) (+ idx 1))))))
-                         (second (get (:rolls acc) (+ idx 2)))
+                                (= 10 (+ roll (get-future-roll acc idx 1))))
+                         (get-future-roll acc idx 2)
                          0)
                        )
      
