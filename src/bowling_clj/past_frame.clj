@@ -12,8 +12,17 @@
 (defn add-roll [roll frames]
   (let [[first-frame & rest-frames] frames]
     (if (= (count frames) 0)
-      (cons {:score roll :frame-type :partial} frames)
+      (if (= 10 roll)
+        (cons {:score roll :frame-type :strike} frames)
+        (cons {:score roll :frame-type :partial} frames))
       (condp = (:frame-type first-frame)
+        :strike (let [updated-frames (cons {:score (+ roll (:score first-frame))
+                                            :frame-type :partial}
+                                           rest-frames)]
+                  (if (= 10 (count updated-frames))
+                    updated-frames
+                    (cons {:score roll :frame-type :partial}
+                          updated-frames)))
         :spare (let [updated-frames (cons {:score (+ roll (:score first-frame))
                                            :frame-type :partial}
                                           rest-frames)]
