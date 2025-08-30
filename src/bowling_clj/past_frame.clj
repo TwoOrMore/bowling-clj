@@ -10,11 +10,21 @@
 ;;; final spare -> two rolls adding to 10 plus 1 bonus roll
 
 (defn add-roll [roll frames]
-  (let [[first & rest] frames]
+  (let [[first-frame & rest-frames] frames]
     (if (= (count frames) 0)
       (cons {:score roll :frame-type :partial} frames)
-      (condp = (:frame-type first)
-        :partial (cons {:score (+ roll (:score first)) :frame-type :full} rest)
+      (condp = (:frame-type first-frame)
+        :spare (let [updated-frames (cons {:score (+ roll (:score first-frame))
+                                           :frame-type :partial}
+                                          rest-frames)]
+                 (if (= 10 (count updated-frames))
+                   updated-frames
+                   (cons {:score roll :frame-type :partial}
+                         updated-frames)))
+        :partial (let [total (+ roll (:score first-frame))]
+                   (if (= total 10)
+                     (cons {:score total :frame-type :spare} rest-frames)
+                     (cons {:score total :frame-type :full} rest-frames)))
         :full (cons {:score roll :frame-type :partial} frames)))))
 
 (defn create-frames [rolls]
@@ -24,7 +34,6 @@
       (if (= (count remaining-rolls) 0)
         (reverse frames)
         (recur remaining-rolls frames)))))
-
 
 (defn score-frames [frames]
   (->> frames
