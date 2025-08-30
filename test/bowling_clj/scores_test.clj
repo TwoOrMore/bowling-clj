@@ -2,9 +2,12 @@
   (:require [clojure.test :refer :all]
             [bowling-clj.future-no-frame :as fnf]
             [bowling-clj.future-no-frame-for :as fnff ]
-            [bowling-clj.past-no-frame :as pnf]))
+            [bowling-clj.past-no-frame :as pnf]
+            [bowling-clj.past-frame :as pf]))
 
-(def score-functions [fnf/score fnff/score pnf/score])
+;; (def score-functions [fnf/score fnff/score pnf/score pf/score])
+
+(def score-functions [pf/score])
 
 (deftest rolling-singles
   (testing "Rolling all zeros"
