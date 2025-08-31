@@ -18,23 +18,23 @@
     (cons {:score roll :frame-type :strike} frames)
     (cons {:score roll :frame-type :partial} frames)))
 
-(defn- add-second-roll [roll first-frame rest-frames]
+(defn- add-second-roll [roll previous-frame rest-frames]
   (let [updated-frames (update-previous-strike
                         roll
-                        (:previous first-frame)
+                        (:previous previous-frame)
                         rest-frames)
-        total (+ roll (:score first-frame))]
+        total (+ roll (:score previous-frame))]
     (if (= total 10)
       (cons {:score total :frame-type :spare} updated-frames)
       (cons {:score total :frame-type :full} updated-frames))))
 
-(defn- add-roll-after-strike [roll first-frame rest-frames]
+(defn- add-roll-after-strike [roll previous-frame rest-frames]
   (let [updated-frames (->> rest-frames
                             (update-previous-strike
                              roll
-                             (:previous first-frame))
+                             (:previous previous-frame))
                             (cons {:score (+ roll
-                                             (:score first-frame))
+                                             (:score previous-frame))
                                    :frame-type :strike}))]
     (if (= 10 (count updated-frames))
       updated-frames
@@ -46,8 +46,8 @@
          {:score roll :frame-type :partial :previous :strike}
          updated-frames)))))
 
-(defn- add-roll-after-spare [roll first-frame rest-frames]
-  (let [updated-frames (cons {:score (+ roll (:score first-frame))
+(defn- add-roll-after-spare [roll previous-frame rest-frames]
+  (let [updated-frames (cons {:score (+ roll (:score previous-frame))
                               :frame-type :partial}
                              rest-frames)]
     (if (= 10 (count updated-frames))
@@ -56,13 +56,13 @@
             updated-frames))))
 
 (defn- add-roll [roll frames]
-  (let [[first-frame & rest-frames] frames]
+  (let [[previous-frame & rest-frames] frames]
     (if (= (count frames) 0)
       (add-first-roll roll frames)
-      (condp = (:frame-type first-frame)
-        :strike (add-roll-after-strike roll first-frame rest-frames)
-        :spare (add-roll-after-spare roll first-frame rest-frames)
-        :partial (add-second-roll roll first-frame rest-frames)
+      (condp = (:frame-type previous-frame)
+        :strike (add-roll-after-strike roll previous-frame rest-frames)
+        :spare (add-roll-after-spare roll previous-frame rest-frames)
+        :partial (add-second-roll roll previous-frame rest-frames)
         :full (add-first-roll roll frames)))))
 
 (defn- create-frames [rolls]
