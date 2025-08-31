@@ -5,9 +5,7 @@
             [bowling-clj.past-no-frame :as pnf]
             [bowling-clj.past-frame :as pf]))
 
-;; (def score-functions [fnf/score fnff/score pnf/score pf/score])
-
-(def score-functions [pf/score])
+(def score-functions [fnf/score fnff/score pnf/score pf/score])
 
 (deftest rolling-singles
   (testing "Rolling all zeros"
@@ -56,7 +54,7 @@
     (doseq [score score-functions]
       (let [result (score [10 10 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0])]
         (is (= 35 result)))))
-
+  
   (testing "All strikes"
     (doseq [score score-functions]
       (let [result (score [10 10 10 10 10 10 10 10 10 10 10 10])]

@@ -1,13 +1,19 @@
 (ns bowling-clj.past-frame)
 
 ;;; On this version we first create a collection of frames
-;;; A frame could be of six types
+;;; A frame could be of four types
 ;;; partial -> Missing the second roll
 ;;; full normal -> two rolls no adding to 10
 ;;; strike -> single roll of 10
 ;;; spare -> two rolls adding to 10
-;;; final strike -> First roll of 10 plus 2 bonus rolls
-;;; final spare -> two rolls adding to 10 plus 1 bonus roll
+
+(defn update-previous-strike [roll previous [last-frame & rest-frames :as frames]]
+  (if (= :strike previous)
+    (cons {:score (+ roll (:score last-frame))
+           :frame-type (:frame-type last-frame)
+           :previous (:previous last-frame)}
+          rest-frames)
+    frames))
 
 (defn add-roll [roll frames]
   (let [[first-frame & rest-frames] frames]
@@ -16,13 +22,22 @@
         (cons {:score roll :frame-type :strike} frames)
         (cons {:score roll :frame-type :partial} frames))
       (condp = (:frame-type first-frame)
-        :strike (let [updated-frames (cons {:score (+ roll (:score first-frame))
-                                            :frame-type :partial}
-                                           rest-frames)]
+        :strike (let [updated-frames (->> rest-frames
+                                          (update-previous-strike
+                                           roll
+                                           (:previous first-frame))
+                                          (cons {:score (+ roll
+                                                           (:score first-frame))
+                                                 :frame-type :strike}))]
                   (if (= 10 (count updated-frames))
                     updated-frames
-                    (cons {:score roll :frame-type :partial}
-                          updated-frames)))
+                    (if (= 10 roll)
+                      (cons
+                       {:score roll :frame-type :strike :previous :strike}
+                       updated-frames)
+                      (cons
+                       {:score roll :frame-type :partial :previous :strike}
+                       updated-frames))))
         :spare (let [updated-frames (cons {:score (+ roll (:score first-frame))
                                            :frame-type :partial}
                                           rest-frames)]
@@ -30,11 +45,17 @@
                    updated-frames
                    (cons {:score roll :frame-type :partial}
                          updated-frames)))
-        :partial (let [total (+ roll (:score first-frame))]
+        :partial (let [updated-frames (update-previous-strike
+                                       roll
+                                       (:previous first-frame)
+                                       rest-frames)
+                       total (+ roll (:score first-frame))]
                    (if (= total 10)
-                     (cons {:score total :frame-type :spare} rest-frames)
-                     (cons {:score total :frame-type :full} rest-frames)))
-        :full (cons {:score roll :frame-type :partial} frames)))))
+                     (cons {:score total :frame-type :spare} updated-frames)
+                     (cons {:score total :frame-type :full} updated-frames)))
+        :full (if (= 10 roll)
+                (cons {:score roll :frame-type :strike} frames)
+                (cons {:score roll :frame-type :partial} frames))))))
 
 (defn create-frames [rolls]
   (loop [[current & remaining-rolls] rolls
