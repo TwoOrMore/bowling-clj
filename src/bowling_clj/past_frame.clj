@@ -47,13 +47,11 @@
          updated-frames)))))
 
 (defn- add-roll-after-spare [roll previous-frame rest-frames]
-  (let [updated-frames (cons {:score (+ roll (:score previous-frame))
-                              :frame-type :partial}
+  (let [updated-frames (cons (update previous-frame :score + roll)
                              rest-frames)]
     (if (= 10 (count updated-frames))
       updated-frames
-      (cons {:score roll :frame-type :partial}
-            updated-frames))))
+      (add-first-roll roll updated-frames))))
 
 (defn- add-roll [roll frames]
   (let [[previous-frame & rest-frames] frames]

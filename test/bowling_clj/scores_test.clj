@@ -59,3 +59,8 @@
     (doseq [score score-functions]
       (let [result (score [10 10 10 10 10 10 10 10 10 10 10 10])]
         (is (= 300 result))))))
+
+(deftest rolling-mixed
+  (doseq [score score-functions]
+    (let [result (score [2 4 9 1 10 7 2 5 5 10 10 5 3 4 5 2 1])]
+      (is (= 137 result)))))
