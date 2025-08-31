@@ -9,9 +9,7 @@
 
 (defn update-previous-strike [roll previous [last-frame & rest-frames :as frames]]
   (if (= :strike previous)
-    (cons {:score (+ roll (:score last-frame))
-           :frame-type (:frame-type last-frame)
-           :previous (:previous last-frame)}
+    (cons (update last-frame :score + roll)
           rest-frames)
     frames))
 
