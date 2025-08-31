@@ -7,6 +7,15 @@
 ;;; strike -> single roll of 10
 ;;; spare -> two rolls adding to 10
 
+(defn- is-strike-frame [roll]
+  (= 10 roll))
+
+(defn- is-last-frame [updated-frames]
+  (= 10 (count updated-frames)))
+
+(defn- is-spare-frame [total]
+  (= total 10))
+
 (defn- update-previous-strike [roll previous [last-frame & rest-frames :as frames]]
   (if (= :strike previous)
     (cons (update last-frame :score + roll)
@@ -14,9 +23,10 @@
     frames))
 
 (defn- add-first-roll [roll frames]
-  (if (= 10 roll)
+  (if (is-strike-frame roll)
     (cons {:score roll :frame-type :strike} frames)
     (cons {:score roll :frame-type :partial} frames)))
+
 
 (defn- add-second-roll [roll previous-frame rest-frames]
   (let [updated-frames (update-previous-strike
@@ -24,7 +34,7 @@
                         (:previous previous-frame)
                         rest-frames)
         total (+ roll (:score previous-frame))]
-    (if (= total 10)
+    (if (is-spare-frame total)
       (cons {:score total :frame-type :spare} updated-frames)
       (cons {:score total :frame-type :full} updated-frames))))
 
@@ -36,9 +46,9 @@
                             (cons {:score (+ roll
                                              (:score previous-frame))
                                    :frame-type :strike}))]
-    (if (= 10 (count updated-frames))
+    (if (is-last-frame updated-frames)
       updated-frames
-      (if (= 10 roll)
+      (if (is-strike-frame roll)
         (cons
          {:score roll :frame-type :strike :previous :strike}
          updated-frames)
@@ -49,7 +59,7 @@
 (defn- add-roll-after-spare [roll previous-frame rest-frames]
   (let [updated-frames (cons (update previous-frame :score + roll)
                              rest-frames)]
-    (if (= 10 (count updated-frames))
+    (if (is-last-frame updated-frames)
       updated-frames
       (add-first-roll roll updated-frames))))
 
